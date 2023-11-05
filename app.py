@@ -8,6 +8,7 @@ from classes.INITDB import INITDB
 from classes.Roles import ADMIN_ROLE
 from classes.Roles import USER_ROLE
 from classes.Roles import ROOT_ROLE
+from  classes.FIRSEVERROOT import FIRSTEVERROOT
 
 app = Flask(__name__)
 
@@ -15,9 +16,11 @@ app = Flask(__name__)
 def hello_world():
     return f"<p>Hello, World!</p>"
 
-@app.route("/INITIAL_ROOT_ROLE")
+@app.route("/INITIAL_ROOT_ROLE", methods=["POST"])
 def initialrootrole(): 
-    return "Sucssesfuly created"
+    email = request.json['email']
+    FIRSTEVERROOT(email)
+    return "Sucssesfuly created root role"
 
 @app.route("/INIT")
 def init():
@@ -52,11 +55,11 @@ def gettoken():
     if by == "email":
         email = request.json['email']
         data = UserGet().byEmail(email).data()
-        token = UserRecord().setRole(USER_ROLE).setPassword(password).setEmail(email).getToken()
+        token = UserRecord().setRole(data[0][4]).setPassword(password).setEmail(email).getToken()
     if by == "phone":
         phone = request.json['phone']
         data = UserGet().byPhone(phone).data()
-        token = UserRecord().setRole(USER_ROLE).setPassword(password).setTelephoneNumber(phone).getToken()
+        token = UserRecord().setRole(data[0][4]).setPassword(password).setTelephoneNumber(phone).getToken()
     if(data[0][0] == password):
         return token
     return {
@@ -65,7 +68,26 @@ def gettoken():
 
 @app.route("/add-product/", methods=['POST'])
 def addproduct():
-    return
+    token = request.headers.get('authorization')
+    title = request.json['title']
+    des = request.json['description']
+    price = request.json['price']
+    imageUrl = request.json['image']
+    timestamp = 0
+    ProductRecord().verify(token).roles([ROOT_ROLE, ADMIN_ROLE]).setTitle(
+        title
+        ).setDescription(
+            des
+            ).setPrice(
+                price
+                ).setImageUrl(
+                    imageUrl
+                    ).setTimestamp(
+                        timestamp
+                        ).commit()
+    return {
+        "msg": "Product created successfuly"
+    }
 
 @app.route("/paginate-products/")
 def paginateproducts(username):

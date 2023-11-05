@@ -6,5 +6,7 @@ class Token:
     def produce(self, payload):
         token = jwt.encode(payload, self.SECRET, algorithm="HS256")
         return token
-    def verify(self):
-        return self
+    def verify(self, token):
+        payload = jwt.decode(token, self.SECRET, algorithms=["HS256"])
+        return payload
+        
