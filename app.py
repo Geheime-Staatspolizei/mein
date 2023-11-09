@@ -92,8 +92,8 @@ def addproduct():
     
 @app.route("/decorator-test/", methods=['POST'])
 @AccessRecord.passes([USER_ROLE])
-def decoratortest(a):
-    return f"True {a}"
+def decoratortest(vals):
+    return f"True {vals}"
 
 @app.route("/paginate-products/")
 def paginateproducts(username):
