@@ -4,11 +4,12 @@ from classes.Token import Token
 from classes.Schemas.ProductRecord import ProductRecord
 from classes.Schemas.UserRecord import UserRecord
 from classes.Schemas.UserGet import UserGet
+from classes.Schemas.AccessRecord import AccessRecord
 from classes.INITDB import INITDB
 from classes.Roles import ADMIN_ROLE
 from classes.Roles import USER_ROLE
 from classes.Roles import ROOT_ROLE
-from  classes.FIRSEVERROOT import FIRSTEVERROOT
+from classes.FIRSEVERROOT import FIRSTEVERROOT
 
 app = Flask(__name__)
 
@@ -88,6 +89,11 @@ def addproduct():
     return {
         "msg": "Product created successfuly"
     }
+    
+@app.route("/decorator-test/", methods=['POST'])
+@AccessRecord.passes([USER_ROLE])
+def decoratortest(a):
+    return f"True {a}"
 
 @app.route("/paginate-products/")
 def paginateproducts(username):
