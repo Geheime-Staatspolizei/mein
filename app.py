@@ -4,6 +4,7 @@ from classes.Token import Token
 from classes.Schemas.ProductRecord import ProductRecord
 from classes.Schemas.UserRecord import UserRecord
 from classes.Schemas.UserGet import UserGet
+from classes.Schemas.ProductPaginate import ProductPaginate
 from classes.Schemas.AccessRecord import AccessRecord
 from classes.INITDB import INITDB
 from classes.Roles import ADMIN_ROLE
@@ -75,7 +76,7 @@ def addproduct():
     price = request.json['price']
     imageUrl = request.json['image']
     timestamp = 0
-    ProductRecord().verify(token).roles([ROOT_ROLE, ADMIN_ROLE]).setTitle(
+    ProductRecord().verify(token).roles([ROOT_ROLE, ADMIN_ROLE, USER_ROLE]).setTitle(
         title
         ).setDescription(
             des
@@ -96,8 +97,11 @@ def decoratortest(vals):
     return f"True {vals}"
 
 @app.route("/paginate-products/")
-def paginateproducts(username):
-    return f"<p>Hello, World! {username}</p>"
+def paginateproducts():
+    limit = request.json['limit']
+    offset = request.json['offset']
+    data = ProductPaginate().paginate(limit, offset).data()
+    return data
 
 @app.route("/make-order/", methods=['POST'])
 def makeorder():
